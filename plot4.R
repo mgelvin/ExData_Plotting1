@@ -1,0 +1,27 @@
+temp<-tempfile()
+download.file('https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip',temp,'curl')
+data<-read.csv2(unz(temp,'household_power_consumption.txt'),na.strings='?',stringsAsFactor=F)
+unlink(temp,recursive=T)
+data<-data[data$Date=='1/2/2007'|data$Date=='2/2/2007',]
+data$Date_Time=paste(data$Date,data$Time,sep=' ')
+data$Date_Time<-strptime(data$Date_Time,format='%d/%m/%Y %H:%M:%S')
+
+
+par(mfrow=c(2,2),mar=c(4,4,2,1),oma=c(0,0,0,0))
+with(data,{
+  plot(Date_Time,Global_active_power,'l',xlab='',ylab='Global Active Power (kilowatts)')
+  plot(Date_Time,Voltage,'l',xlab='datetime',ylab='Voltage')
+  plot(Date_Time,Sub_metering_1,'l',xlab='',ylab='Energy sub metering')
+  lines(Date_Time,Sub_metering_2,'l',col='red')
+  lines(Date_Time,Sub_metering_3,'l',col='blue')
+  legend('topright',col=c('black','red','blue'),legend=c('Sub_metering_1','Sub_metering_2','Sub_metering_3'),lty=c(1,1,1),bty='n')
+  plot(Date_Time,Global_reactive_power,'l',xlab='',ylab='Global Reactive Power (kilowatts)')
+})
+
+
+png(filename='plot4.png')
+plot(data$Date_Time,data$Sub_metering_1,'l',xlab='',ylab='Energy sub metering')
+lines(data$Date_Time,data$Sub_metering_2,'l',col='red')
+lines(data$Date_Time,data$Sub_metering_3,'l',col='blue')
+legend('topright',col=c('black','red','blue'),legend=c('Sub_metering_1','Sub_metering_2','Sub_metering_3'),lty=c(1,1,1),)
+dev.off()
